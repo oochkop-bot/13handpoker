@@ -1,0 +1,11 @@
+{
+  "appId": "mn.mongolpoker.game",
+  "appName": "Монгол Покер",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
