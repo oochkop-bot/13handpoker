@@ -1,0 +1,74 @@
+name: APK угсрах
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:        # Actions таб дээрээс гараар ажиллуулж болно
+
+permissions:
+  contents: write           # Release үүсгэхэд шаардлагатай
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Кодыг татах
+        uses: actions/checkout@v4
+
+      - name: Node суулгах
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Java суулгах
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Android SDK бэлдэх
+        uses: android-actions/setup-android@v3
+
+      - name: Сангуудыг суулгах
+        run: npm install
+
+      - name: Android төслийг үүсгэх
+        run: |
+          npx cap add android || npx cap sync android
+          npx cap sync android
+
+      - name: Дүрс, splash үүсгэх
+        run: npx capacitor-assets generate --android || echo "дүрс алгасав"
+
+      - name: APK угсрах
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: APK-г нэрлэх
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/debug/app-debug.apk out/mongol-poker.apk
+          ls -la out/
+
+      - name: APK-г хавсаргах
+        uses: actions/upload-artifact@v4
+        with:
+          name: mongol-poker-apk
+          path: out/mongol-poker.apk
+          retention-days: 90
+
+      - name: Release болгож нийтлэх
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Монгол Покер APK №${{ github.run_number }}
+          body: |
+            📱 **Монгол Покер** — Android дээр суулгах APK
+
+            Доорх `mongol-poker.apk`-г утсандаа татаж суулгана уу.
+            (Тохиргоо → Аюулгүй байдал → «Үл мэдэгдэх эх сурвалж»-ийг зөвшөөрөх шаардлагатай)
+          files: out/mongol-poker.apk
