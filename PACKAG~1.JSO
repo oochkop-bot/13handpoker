@@ -1,0 +1,20 @@
+{
+  "name": "mongol-poker",
+  "version": "1.0.0",
+  "description": "Монгол Покер — 13 хөзөрт тоглоом (Big Two дүрэм). 2–4 тоглогч P2P эсвэл ботуудтай.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "android:add": "cap add android",
+    "android:sync": "cap sync android",
+    "android:build": "cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^6.2.0"
+  }
+}
